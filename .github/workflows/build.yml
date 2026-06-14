@@ -109,3 +109,46 @@ jobs:
     - name: Build dedicated macos-amd64
       run: |
         scripts/build-macos-amd64.sh -d
+
+  build-android-armv7a-ndk17:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc-multilib g++-multilib
+
+    - name: Setup NDK r17c
+      uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r17c
+
+    - name: Download Clang 11
+      run: |
+        wget -q https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/clang+llvm-11.1.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+        tar -xf clang+llvm-11.1.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz -C $HOME
+        echo "$HOME/clang+llvm-11.1.0-x86_64-linux-gnu-ubuntu-16.04/bin" >> $GITHUB_PATH
+
+    - name: Configure
+      run: |
+        python3 waf configure -T release --togles -build--game== cstrike --android=armeabi-v7a-hard,host,21
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+    - name: Build
+      run: python3 waf build -j$(nproc)
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: source-engine-android-armv7a-ndk17
+        path: build/
