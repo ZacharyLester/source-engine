@@ -16,8 +16,15 @@ jobs:
 
     - name: Install build dependencies
       run: |
+        sudo dpkg --add-architecture i386
         sudo apt-get update
-        sudo apt-get install -y build-essential gcc-multilib g++-multilib
+        sudo apt-get install -y \
+          build-essential gcc-multilib g++-multilib \
+          libsdl2-dev:i386 libfreetype6-dev:i386 \
+          libfontconfig1-dev:i386 libopenal-dev:i386 \
+          libjpeg-dev:i386 libpng-dev:i386 \
+          libcurl4-openssl-dev:i386 libbz2-dev:i386 \
+          libedit-dev:i386
 
     - name: Setup NDK r17c
       uses: nttld/setup-ndk@v1
@@ -32,7 +39,7 @@ jobs:
         echo "$HOME/clang+llvm-11.1.0-x86_64-linux-gnu-ubuntu-16.04/bin" >> $GITHUB_PATH
 
     - name: Configure
-      run: python3 ./waf configure -T release --build-games=cstrike -d --togles
+      run: python3 ./waf configure -T release --build-games=cstrike --togles --android=armeabi-v7a-hard,host,21
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
