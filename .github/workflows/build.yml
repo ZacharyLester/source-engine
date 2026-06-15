@@ -32,12 +32,12 @@ jobs:
         echo "$HOME/clang+llvm-11.1.0-x86_64-linux-gnu-ubuntu-16.04/bin" >> $GITHUB_PATH
 
     - name: Configure
-      run: python3 waf configure -T release --togles --build-game=cstrike --android=armeabi-v7a-hard,host,21
+      run: python3 ./waf configure -T release --build-games=cstrike -d --togles
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
     - name: Build
-      run: python3 waf build -j$(nproc)
+      run: python3 ./waf install --strip -j$(nproc)
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
