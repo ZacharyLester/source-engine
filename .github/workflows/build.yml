@@ -26,11 +26,11 @@ jobs:
           libcurl4-openssl-dev:i386 libbz2-dev:i386 \
           libedit-dev:i386
 
-    - name: Setup NDK r17c
+    - name: Setup NDK r10e
       uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
-        ndk-version: r17c
+        ndk-version: r10e
 
     - name: Download Clang 11
       run: |
