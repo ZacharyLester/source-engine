@@ -26,11 +26,11 @@ jobs:
           libcurl4-openssl-dev:i386 libbz2-dev:i386 \
           libedit-dev:i386
 
-    - name: Setup NDK r10e
-      uses: nttld/setup-ndk@v1
-      id: setup-ndk
-      with:
-        ndk-version: r10e
+    - name: Download NDK r10e
+      run: |
+        wget -q https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+        unzip -q android-ndk-r10e-linux-x86_64.zip -d $HOME
+        echo "ANDROID_NDK_HOME=$HOME/android-ndk-r10e" >> $GITHUB_ENV
 
     - name: Download Clang 11
       run: |
@@ -40,8 +40,6 @@ jobs:
 
     - name: Configure
       run: python3 ./waf configure -T release --build-games=cstrike --togles --android=armeabi-v7a-hard,host,21
-      env:
-        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
     - name: Build
       run: python3 ./waf install --strip -j$(nproc)
